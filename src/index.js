@@ -8,6 +8,12 @@ const connectDB = require('./database')
 app.use(express.json({ limit: '5mb' }))
 app.use(cors())
 
+//router imports
+const userRoutes = require('./routes/users')
+
+//use routes
+app.use('/api', userRoutes)
+
 //app start
 const appStart = () => {
   try {
