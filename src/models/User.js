@@ -52,12 +52,17 @@ const UserSchema = new Schema(
 UserSchema.pre('save', async function (next) {
   let user = this
 
-  //if password field is not changed return next
-  if (!user.isModified('password')) {
-    return next()
-  }
   //if password was changed
-  user.password = await hash(user.password, 10)
+  if (user.isModified('password')) {
+    user.password = await hash(user.password, 10)
+  }
+
+  //if user is new generate verification code
+  if (user.isNew) {
+    user.verificationCode = randomBytes(20).toString('hex')
+  }
+
+  next()
 })
 
 UserSchema.methods.comparePassword = async function (password) {

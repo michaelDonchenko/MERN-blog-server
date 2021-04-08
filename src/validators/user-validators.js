@@ -15,6 +15,24 @@ const email = check('email')
   .isEmail()
   .withMessage('Please provide a valid email')
 
+//check if email exists
+const emailExists = check('email').custom(async (value) => {
+  const user = await User.findOne({ email: value })
+
+  if (user) {
+    throw new Error('Email already exists')
+  }
+})
+
+//check if username exists
+const usernameExists = check('username').custom(async (value) => {
+  const user = await User.findOne({ username: value })
+
+  if (user) {
+    throw new Error('Username already taken')
+  }
+})
+
 module.exports = {
-  registerValidation: [username, email, password],
+  registerValidation: [username, email, password, emailExists, usernameExists],
 }
