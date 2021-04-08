@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const { sendMail } = require('./mail-sender')
 const { SERVER_URL } = require('../constants')
+const _ = require('lodash')
 
 //register new user
 exports.register = async (req, res) => {
@@ -65,6 +66,40 @@ exports.verifyAccount = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'The user is verified',
+    })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred',
+    })
+  }
+}
+
+exports.login = async (req, res) => {
+  try {
+    let userFromDB = req.user
+
+    //generate jwt token
+    const token = await userFromDB.generateJWT()
+
+    const user = _.pick(userFromDB, [
+      '_id',
+      'username',
+      'email',
+      'images',
+      'about',
+      'role',
+      'verified',
+      'banned',
+    ])
+
+    //send success status user and token
+    return res.status(200).json({
+      success: true,
+      message: 'User is logged in',
+      user,
+      token: `bearer ${token}`,
     })
   } catch (error) {
     console.log(error.message)

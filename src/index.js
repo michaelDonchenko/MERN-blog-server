@@ -3,10 +3,15 @@ const cors = require('cors')
 const app = express()
 const { PORT } = require('./constants')
 const connectDB = require('./database')
+const passport = require('passport')
+
+//import passport middleware
+require('./middlewares/passport-middleware')
 
 //init middlewares
 app.use(express.json({ limit: '5mb' }))
 app.use(cors())
+app.use(passport.initialize())
 
 //router imports
 const userRoutes = require('./routes/users')

@@ -1,7 +1,8 @@
 const { Schema, model } = require('mongoose')
 const { hash, compare } = require('bcryptjs')
 const { SECRET } = require('../constants')
-const { randomBytes, sign } = require('crypto')
+const { randomBytes } = require('crypto')
+const { sign } = require('jsonwebtoken')
 
 const UserSchema = new Schema(
   {
