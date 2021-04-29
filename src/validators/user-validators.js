@@ -62,7 +62,20 @@ const loginValidation = check('username').custom(async (value, { req }) => {
   req.user = user
 })
 
+const updateDetailsValidator = check('username').custom(
+  async (value, { req }) => {
+    if (req.user.username !== req.body.username) {
+      const userExists = await User.findOne({ username: req.body.username })
+
+      if (userExists) {
+        throw new Error('The username already exists')
+      }
+    }
+  }
+)
+
 module.exports = {
   registerValidation: [username, email, password, emailExists, usernameExists],
   loginValidation: [username, password, loginValidation],
+  updateDetailsValidation: [username, updateDetailsValidator],
 }

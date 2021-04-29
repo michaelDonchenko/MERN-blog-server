@@ -109,3 +109,72 @@ exports.login = async (req, res) => {
     })
   }
 }
+
+exports.protected = async (req, res) => {
+  try {
+    return res.send('protected info')
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred',
+    })
+  }
+}
+
+exports.allUsers = async (req, res) => {
+  const limit = req.query.limit ? parseInt(req.query.limit) : 10
+  const page = req.query.page ? parseInt(req.query.page) : 1
+  try {
+    const users = await User.find()
+      .select('_id username email images about role verified banned')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+
+    const count = await User.find().countDocuments()
+
+    if (!users) {
+      return res.status(404).json({
+        success: false,
+        message: 'Could not find users',
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      users: users,
+      count: count,
+      pages: Math.ceil(count / limit),
+    })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred',
+    })
+  }
+}
+
+exports.updateDetails = async (req, res) => {
+  const { username, about } = req.body
+  const id = req.user._id
+  try {
+    const user = await User.findByIdAndUpdate(
+      id,
+      { username, about },
+      { new: true }
+    )
+
+    return res.status(201).json({
+      success: true,
+      user,
+      message: 'Details updated succefully',
+    })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred',
+    })
+  }
+}
