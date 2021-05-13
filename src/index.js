@@ -15,9 +15,11 @@ app.use(passport.initialize())
 
 //router imports
 const userRoutes = require('./routes/users')
+const cloudinaryRoutes = require('./routes/cloudinary')
 
 //use routes
 app.use('/api', userRoutes)
+app.use('/api', cloudinaryRoutes)
 
 //app start
 const appStart = () => {
